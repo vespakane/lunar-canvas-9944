@@ -1,0 +1,5 @@
+IMG_*.PNG
+IMG_*.png
+tools/cmp_*.png
+tools/out/
+.DS_Store
