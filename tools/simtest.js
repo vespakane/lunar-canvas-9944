@@ -1,4 +1,4 @@
-const S=require(process.argv[2]);
+const S=require(require('path').resolve(process.argv[2]));
 const seeds=[12345,7,99,2026];
 for(const seed of seeds){
   const start=new Date(2025,7,20); // 420 days before ~13 Oct 2026

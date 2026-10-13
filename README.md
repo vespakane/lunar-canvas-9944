@@ -7,7 +7,7 @@ day-by-day business simulation. Static HTML, no backend; everything is stored on
 1. Phone and computer on the same Wi-Fi.
 2. On the computer: `cd app && python3 -m http.server 8765 --bind 0.0.0.0`
 3. On the phone, open Safari: `http://<computer-ip>:8765/index.html`
-4. Share > Add to Home Screen, then launch from the icon for the full-screen version.
+4. Share > Add to Home Screen, then launch from the icon (`app/icon.png`) for the full-screen version.
 
 ## Files
 - `app/src.html` – editable source (references `app/img/*.png` and `app/fonts/*.woff2`).
@@ -25,7 +25,7 @@ day-by-day business simulation. Static HTML, no backend; everything is stored on
 `app/sim.js` is a seeded day-by-day business simulation (420 days): organic growth, ad spend reinvested from profit,
 purchase orders with 16–34 day lead times (sometimes 45–78), production problems (short batches, delays), stockouts
 with emergency air freight, demand drops (ad account flags, algorithm changes, checkout bugs) and viral spikes, plus
-weekday and seasonal patterns. Monthly revenue is tuned to the min/max set on the edit screen (default £50k–£200k).
+weekday and seasonal patterns. Items are low ticket (£7.50–£14.50, average order around £10 with 1.6 units) and roughly 3–4% of visitors order. Monthly revenue is tuned to the min/max set on the edit screen (default £50k–£200k).
 Today's figures fill in through the day using an intraday curve.
 
 ## Data

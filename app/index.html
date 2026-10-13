@@ -6,7 +6,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Seller">
+<meta name="apple-mobile-web-app-title" content="Seller Center">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <meta name="theme-color" content="#f5f5f5">
 <title>Seller Center</title>
 <style>
@@ -425,14 +427,14 @@ function simulate(opts){
   var rf=function(a,b){return a+rnd()*(b-a)};
 
   // --- state ---
-  var capital=64000, ad=420, organic=1050, aov=34.5, unitCost=11.8, cpc=0.34, conv=0.031;
-  var inventory=6500, onOrder=[]; var lastPO=-99; var trailingDemand=[]; // {arrive:index, units, note}
+  var capital=64000, ad=420, organic=4300, aov=9.4, unitCost=2.1, cpc=0.21, conv=0.034; var CREDIT=30000;
+  var inventory=22000, onOrder=[]; var lastPO=-99; var trailingDemand=[]; // {arrive:index, units, note}
   var demandMul=1, demandUntil=-1, viralMul=1, viralUntil=-1;
   var events=[], out={}, list=[];
   var trailing=[]; // last 28 days revenue
   var skus=10, lowStockCount=1, unshipped=0, stockoutDays=0;
   // growth target: scale so monthly revenue grows from ~minMonthly*1.1 to ~maxMonthly*0.85 over the year
-  var startMonthly=minMonthly*1.12, endMonthly=maxMonthly*0.78;
+  var startMonthly=minMonthly*1.3, endMonthly=maxMonthly*0.78;
   var dailyGrowth=Math.pow(endMonthly/startMonthly,1/(days-60))-1; // compounding of organic base
 
   function avgDemandSafe(){return trailingDemand.length?trailingDemand.reduce(function(a,b){return a+b},0)/trailingDemand.length:2000}
@@ -451,14 +453,14 @@ function simulate(opts){
     var visitors=Math.round((organic+adVisitors)*WEEKDAY[d.getDay()]*season(d)*demandMul*viralMul*(1+gauss()*0.07));
     var cr=conv*(1+gauss()*0.08)*(viralMul>1.2?0.85:1);
     var demandOrders=Math.round(visitors*cr);
-    var unitsPerOrder=1.28;
+    var unitsPerOrder=1.6;
     var demandUnits=Math.round(demandOrders*unitsPerOrder);
     // --- supply constraint ---
     var fill=inventory>=demandUnits?1:(demandUnits?inventory/demandUnits:1);
     if(fill<1&&inventory===0&&!(out[ymd(addDays(d,-1))]&&out[ymd(addDays(d,-1))].stockout)) events.push({d:key,t:'Stockout — best sellers sold out, orders capped',kind:'stockout'});
     var units=Math.min(demandUnits,inventory);
     stockoutDays=fill<0.5?stockoutDays+1:0;
-    if(stockoutDays===4&&capital>8000){var eq=Math.round(Math.max(20,avgDemandSafe()/aov*unitsPerOrder)*14);var ec=eq*unitCost*1.35;if(ec>capital*0.8){eq=Math.floor(capital*0.8/(unitCost*1.35));ec=eq*unitCost*1.35;}if(eq>0){onOrder.push({arrive:i+ri(6,10),units:eq,note:' (air freight)',balance:0});capital-=ec;events.push({d:key,t:'Emergency air-freight order: '+eq.toLocaleString()+' units at +35% cost',kind:'po'});}}
+    if(stockoutDays===4&&capital+CREDIT>8000){var eq=Math.round(Math.max(20,avgDemandSafe()/aov*unitsPerOrder)*14);var ec=eq*unitCost*1.35;if(ec>(capital+CREDIT)*0.8){eq=Math.floor((capital+CREDIT)*0.8/(unitCost*1.35));ec=eq*unitCost*1.35;}if(eq>0){onOrder.push({arrive:i+ri(6,10),units:eq,note:' (air freight)',balance:0});capital-=ec;events.push({d:key,t:'Emergency air-freight order: '+eq.toLocaleString()+' units at +35% cost',kind:'po'});}}
     var orders=Math.round(demandOrders*fill);
     var buyers=Math.round(orders*rf(0.93,0.985));
     inventory-=units;
@@ -471,8 +473,8 @@ function simulate(opts){
     var avgRev=trailing.reduce(function(a,b){return a+b},0)/trailing.length;
     var avgDemand=trailingDemand.reduce(function(a,b){return a+b},0)/trailingDemand.length;
     // reinvest: ad budget follows 11-14% of demand revenue, paused during stockouts, capped by cash
-    var adTarget=avgDemand*rf(0.11,0.14)*(fill<0.4?0.25:1); ad+= (adTarget-ad)*0.08; ad=clamp(ad,150,Math.max(150,capital*0.03));
-    cpc*=1+gauss()*0.004+0.0002; aov*=1+gauss()*0.002+0.00025; conv=clamp(conv*(1+gauss()*0.003),0.022,0.045);
+    var adTarget=avgDemand*rf(0.11,0.14)*(fill<0.4?0.25:1); ad+= (adTarget-ad)*0.08; ad=clamp(ad,150,Math.max(150,(capital+CREDIT)*0.03));
+    cpc*=1+gauss()*0.004+0.0002; aov=clamp(aov*(1+gauss()*0.002+0.0002),7.5,14.5); conv=clamp(conv*(1+gauss()*0.003),0.026,0.052);
     // --- purchasing with lead times ---
     var dailyUnits=Math.max(20,avgDemand/aov*unitsPerOrder*(1+dailyGrowth*30));
     var cover=(inventory+onOrder.reduce(function(a,o){return a+o.units},0))/dailyUnits;
@@ -481,7 +483,7 @@ function simulate(opts){
       if(long){lead=ri(45,78);note=' (long lead)';}
       var qty=Math.round(dailyUnits*ri(28,45));
       var cost=qty*unitCost, deposit=cost*0.3;
-      if(deposit>capital*0.6){qty=Math.max(0,Math.floor(capital*0.6/(unitCost*0.3)));cost=qty*unitCost;deposit=cost*0.3;note+=' (cash limited)';}
+      if(deposit>(capital+CREDIT)*0.6){qty=Math.max(0,Math.floor((capital+CREDIT)*0.6/(unitCost*0.3)));cost=qty*unitCost;deposit=cost*0.3;note+=' (cash limited)';}
       if(qty>0){
         var ev={d:key,t:'PO placed: '+qty.toLocaleString()+' units, lead time '+lead+' days'+(long?' — supplier long lead':''),kind:long?'lead':'po'};
         if(rnd()<0.16){var p=PRODUCTION[ri(0,PRODUCTION.length-1)];var cut=rnd()<0.5;if(cut){qty=Math.round(qty*0.6);note+=' (short batch)';}else{lead+=ri(10,22);note+=' (delayed)';}ev.t+=' — '+p;ev.kind='production';}
