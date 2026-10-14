@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Seller Center">
 <link rel="apple-touch-icon" href="icon.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -403,8 +403,8 @@ html.test .screen,html.test .sheet,html.test .ovl,html.test .splash{width:402px;
 (function(){
 'use strict';
 if(location.search.indexOf('test')>=0) document.documentElement.classList.add('test');
-/* iOS home-screen web apps sometimes report a viewport shorter than the screen (notably after the keyboard closes), leaving a gap under the tab bar; size the shell from the most trustworthy height instead. */
-(function(){var root=document.documentElement;function fit(){var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;var h=window.innerHeight;if(window.visualViewport)h=Math.max(h,window.visualViewport.height);if(navigator.standalone&&window.innerWidth<=window.innerHeight)h=Math.max(h,screen.height);if(window.scrollY||document.body.scrollTop)window.scrollTo(0,0);root.style.setProperty('--vh',Math.round(h)+'px')}
+/* iOS home-screen web apps can leave the viewport short after the keyboard closes; refit the shell from the visual viewport and reset any stray window scroll. */
+(function(){var root=document.documentElement;function fit(){var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;var h=window.innerHeight;if(window.visualViewport)h=Math.max(h,window.visualViewport.height);if(window.scrollY||document.body.scrollTop)window.scrollTo(0,0);root.style.setProperty('--vh',Math.round(h)+'px')}
 fit();window.addEventListener('resize',fit);window.addEventListener('orientationchange',function(){setTimeout(fit,300)});window.addEventListener('pageshow',fit);if(window.visualViewport)window.visualViewport.addEventListener('resize',fit);document.addEventListener('focusout',function(){setTimeout(fit,50);setTimeout(fit,400)})})();
 (function(){var sp=document.getElementById('splash');if(location.search.indexOf('splash')>=0)return;setTimeout(function(){sp.classList.add('hide');setTimeout(function(){sp.parentNode.removeChild(sp)},300)},500)})();
 var $=function(s,r){return (r||document).querySelector(s)};
