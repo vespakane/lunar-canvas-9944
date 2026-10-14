@@ -40,7 +40,7 @@ input{font:inherit;color:inherit}
 .hic.bell{left:313.67px;width:20.33px;height:22.33px}
 .hic.help{left:367.33px;width:22.33px;height:22.33px}
 .hbadge{position:absolute;left:328.3px;top:-7px;min-width:17.5px;height:15.7px;padding:0 5px;border-radius:8px;background:var(--red);color:#fff;font-size:11px;font-weight:500;line-height:15.7px;text-align:center}
-.hbody{padding:calc(var(--sat) + 67px) 12px 420px}
+.hbody{padding:calc(var(--sat) + 67px) 12px calc(var(--sab) + 76px)}
 .card{background:#fff;border-radius:8px;margin-bottom:8px;position:relative}
 .ctitle{display:flex;align-items:center;height:20px;font-size:15px;line-height:20px}
 .ctitle img{margin-right:6px}
@@ -108,7 +108,7 @@ input{font:inherit;color:inherit}
 .ahdr .sub{text-align:center;font-size:11px;line-height:14px;color:#707070}
 .pill{position:absolute;left:12px;top:calc(var(--sat) + 60px);height:36px;border:1px solid #d5d5d5;border-radius:18px;padding:0 17px 0 16px;font-feature-settings:"tnum";display:flex;align-items:center;font-size:16.5px;font-weight:500;line-height:34px;white-space:nowrap}
 .pill img{width:10.67px;height:6.33px;margin-left:6px}
-.abody{padding:calc(var(--sat) + 108.67px) 12px 60px}
+.abody{padding:calc(var(--sat) + 108.67px) 12px var(--sab)}
 .acard{background:#fff;border-radius:8px;margin-bottom:12.33px;padding:13px 12px 19px}
 .ahead{display:flex;align-items:center;height:22px;font-size:17px;font-weight:500;line-height:22px}
 .ahead .t{flex:1}
@@ -179,7 +179,7 @@ input{font:inherit;color:inherit}
 .ehdr .back img{width:10.33px;height:18.67px}
 .ehdr .ttl{margin-top:8px;text-align:center;font-size:17px;font-weight:500;line-height:22px}
 .ehdr .sub{text-align:center;font-size:11px;line-height:14px;color:#707070}
-.ebody{padding:calc(var(--sat) + 64px) 12px 90px}
+.ebody{padding:calc(var(--sat) + 64px) 12px calc(max(12px, var(--sab)) + 44px)}
 .ecard{background:#fff;border-radius:8px;margin-bottom:12px;padding:12px}
 .ecard h3{margin:0;font-size:17px;font-weight:500;line-height:22px}
 .ecard .hint{font-size:12.5px;line-height:16px;color:#737373;margin-top:2px}
@@ -209,8 +209,12 @@ input{font:inherit;color:inherit}
 .evt{flex:1}
 .toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.75);color:#fff;font-size:14px;line-height:20px;padding:10px 18px;border-radius:8px;z-index:50;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.splash{position:fixed;inset:0;z-index:100;background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Brand Sans',sans-serif;color:#000;transition:opacity .25s;pointer-events:none}
+.splash .name{position:absolute;left:0;right:0;top:33.5%;transform:translateY(-50%);text-align:center;font-size:37px;line-height:44px;font-weight:700;letter-spacing:-.4px}
+.splash .copy{position:absolute;left:0;right:0;bottom:19px;text-align:center;font-size:15.5px;line-height:20px;font-weight:400;color:#1c1c1c;white-space:nowrap;padding:0 8px}
+.splash.hide{opacity:0}
 .notrans *{transition:none!important;animation:none!important}
-html.test .screen,html.test .sheet,html.test .ovl{width:402px;right:auto}
+html.test .screen,html.test .sheet,html.test .ovl,html.test .splash{width:402px;right:auto}
 </style>
 </head>
 <body>
@@ -391,6 +395,7 @@ html.test .screen,html.test .sheet,html.test .ovl{width:402px;right:auto}
   <button class="esave" id="esave">Save</button>
 </div>
 <div class="toast" id="toast">Saved</div>
+<div class="splash" id="splash"><div class="name">Seller Center</div><div class="copy">Copyright (c) 2015 CocoaPods. All rights reserved.</div></div>
 
 <script>
 /* Seller simulation engine. Deterministic for a given seed.
@@ -514,6 +519,7 @@ if(typeof module!=='undefined'&&module.exports)module.exports=api; else root.Sel
 (function(){
 'use strict';
 if(location.search.indexOf('test')>=0) document.documentElement.classList.add('test');
+(function(){var sp=document.getElementById('splash');if(location.search.indexOf('splash')>=0)return;setTimeout(function(){sp.classList.add('hide');setTimeout(function(){sp.parentNode.removeChild(sp)},300)},500)})();
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var KEY='tts-clone-v2';
