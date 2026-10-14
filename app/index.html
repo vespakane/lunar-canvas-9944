@@ -22,7 +22,7 @@ body{font-family:'Brand Sans',-apple-system,BlinkMacSystemFont,sans-serif;color:
 img{display:block}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;margin:0}
 input{font:inherit;color:inherit}
-.screen{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;transform:translateX(0);transition:transform .32s cubic-bezier(.32,.72,0,1);will-change:transform}
+.screen{position:fixed;left:0;top:0;width:100%;height:var(--vh,100%);overflow:hidden;transform:translateX(0);transition:transform .32s cubic-bezier(.32,.72,0,1);will-change:transform}
 .screen.pushed{transform:translateX(100%)}
 .screen.behind{transform:translateX(-25%)}
 .scroll{position:absolute;left:0;top:0;width:100%;height:100%;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
@@ -153,9 +153,9 @@ input{font:inherit;color:inherit}
 .mgrid.period{row-gap:17px}
 
 /* ===== DATE SHEET ===== */
-.ovl{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .25s}
+.ovl{position:fixed;left:0;top:0;width:100%;height:var(--vh,100%);background:rgba(0,0,0,.4);z-index:30;opacity:0;pointer-events:none;transition:opacity .25s}
 .ovl.show{opacity:1;pointer-events:auto}
-.sheet{position:fixed;left:0;right:0;bottom:0;height:476px;background:#fff;border-radius:14px 14px 0 0;z-index:31;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);padding:12.7px 12px 0}
+.sheet{position:fixed;left:0;right:0;top:calc(var(--vh,100%) - 476px);height:476px;background:#fff;border-radius:14px 14px 0 0;z-index:31;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);padding:12.7px 12px 0}
 .sheet.show{transform:translateY(0)}
 .sheet .st{text-align:center;font-size:17px;font-weight:500;line-height:22px}
 .sheet .x{position:absolute;right:6px;top:6.7px;width:36px;height:34px;display:flex;align-items:center;justify-content:center}
@@ -520,6 +520,9 @@ if(typeof module!=='undefined'&&module.exports)module.exports=api; else root.Sel
 (function(){
 'use strict';
 if(location.search.indexOf('test')>=0) document.documentElement.classList.add('test');
+/* iOS home-screen web apps sometimes report a viewport shorter than the screen (notably after the keyboard closes), leaving a gap under the tab bar; size the shell from the most trustworthy height instead. */
+(function(){var root=document.documentElement;function fit(){var a=document.activeElement;if(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))return;var h=window.innerHeight;if(window.visualViewport)h=Math.max(h,window.visualViewport.height);if(navigator.standalone&&window.innerWidth<=window.innerHeight)h=Math.max(h,screen.height);if(window.scrollY||document.body.scrollTop)window.scrollTo(0,0);root.style.setProperty('--vh',Math.round(h)+'px')}
+fit();window.addEventListener('resize',fit);window.addEventListener('orientationchange',function(){setTimeout(fit,300)});window.addEventListener('pageshow',fit);if(window.visualViewport)window.visualViewport.addEventListener('resize',fit);document.addEventListener('focusout',function(){setTimeout(fit,50);setTimeout(fit,400)})})();
 (function(){var sp=document.getElementById('splash');if(location.search.indexOf('splash')>=0)return;setTimeout(function(){sp.classList.add('hide');setTimeout(function(){sp.parentNode.removeChild(sp)},300)},500)})();
 var $=function(s,r){return (r||document).querySelector(s)};
 var $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
